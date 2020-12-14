@@ -1,0 +1,2 @@
+sudo modprobe bcm2835_v4l2
+exit

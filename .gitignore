@@ -1,0 +1,9 @@
+*.ppu
+*.o
+Binder/Binder
+NightMode/CameraControl
+NightMode/Lighter
+NightMode/NightMode
+Video
+Temp
+lastsnap.jpg

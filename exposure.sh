@@ -1,0 +1,8 @@
+v4l2-ctl --set-ctrl auto_exposure=0 2> "/dev/null"
+v4l2-ctl --set-ctrl iso_sensitivity_auto=1 2> "/dev/null"
+v4l2-ctl --set-ctrl scene_mode=8 2> "/dev/null"
+v4l2-ctl --set-ctrl exposure_dynamic_framerate=1 2> "/dev/null"
+v4l2-ctl --set-ctrl sharpness=50 2> "/dev/null"
+v4l2-ctl --set-ctrl exposure_metering_mode=1 2> "/dev/null"
+v4l2-ctl --set-ctrl brightness=50 2> "/dev/null"
+v4l2-ctl --set-ctrl contrast=0 2> "/dev/null"
