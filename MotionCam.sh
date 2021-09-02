@@ -1,6 +1,7 @@
 #!/bin/bash 
-echo "MotionCam v1.0"
+echo "MotionCam v1.1"
 echo "Author: Paweł Bielecki"
+echo "Starting ( $( date ) )"
 TEMP_DIR="/dev/shm/MotionCam"
 mkdir $TEMP_DIR 2> "/dev/null"
 
@@ -43,7 +44,9 @@ MEM_PATH="$MEM_PATH/MotionCam"
 mkdir $MEM_PATH 2> "/dev/null"
 MEM_PATH="$MEM_PATH/"
 echo "Selected video storage path: $MEM_PATH"
-ln -f -s $MEM_PATH "Video"
+rm -f "Video"
+rm -f "Temp"
+ln -f -s "$MEM_PATH" "Video"
 ln -f -s "$TEMP_DIR/" "Temp"
 ln -f -s "$CAMERA_PATH" "Temp/video"
 ./InitGPIO.sh
@@ -52,12 +55,16 @@ ln -f -s "$CAMERA_PATH" "Temp/video"
 motion -c "configuration.conf" &> "/dev/null" &
 MOTION_PID=$!
 echo $MOTION_PID > "$TEMP_DIR/MOTION_PID"
+ruby -run -ehttpd "$MEM_PATH" -p8000 &> "/dev/null" & 
+RUBY_PID=$!
+
+echo "Entered to main loop ( $( date ) )"
 
 #Main loop
 while [ -e $TEMP_DIR/started ]; 
 do
     #deleting the oldest video
-    while [ $( df $MEM_PATH | tail -n 1 | tr -s " " | cut -f 4 -d " " ) -lt 65536 ];
+    while [ $( df $MEM_PATH | tail -n 1 | tr -s " " | cut -f 4 -d " " ) -lt 262144 ];
     do
         FILE=$( ls "$MEM_PATH" | head -n 1 )
         rm "$MEM_PATH$FILE"
@@ -116,8 +123,10 @@ done
 #Turning off    
 kill -s SIGTERM $MOTION_PID
 wait -f $MOTION_PID
+kill -s SIGTERM $RUBY_PID
+wait -f $RUBY_PID
 ./FinitGPIO.sh 
-rm "lastsnap.jpg"
-rm "Video"
-rm "Temp"
+rm -f "lastsnap.jpg"
+rm -f "Video"
+rm -f "Temp"
 rm -rf $TEMP_DIR

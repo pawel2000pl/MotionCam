@@ -3,12 +3,15 @@ program CameraControl;
 {$mode objfpc}{$inline on}
 
 uses
-    SysUtils, Classes, FPImage, UniversalImage, INIFiles, math;
+    SysUtils, Classes, FPImage, UniversalImage, INIFiles, math, DateUtils;
     
 const 
     MAX_BRIGHT = (high(TFPColor.red) + high(TFPColor.green) + high(TFPColor.blue)) div 3;
     ExpectedAverage = 0.5;
     ExpectedStd = 0.4; //of current average
+    MinStd = 0.03;
+    MinRestartTime = OneHour/2;
+    
     
     MaxBrightness = 80;
     MinBrightness = 20;
@@ -33,6 +36,7 @@ var
     DayMode : 0..1; // 0=Night  1=Day 
     ChangeModeDelay : Integer;
     NeedRestart, ChangedDayMode : Boolean;
+    LastRestartTime : TDateTime;
 begin
 //Need parameters: Config file, Sample Image
     
@@ -46,6 +50,7 @@ begin
     Contrast := Configuration.ReadInteger('Settings', 'Contrast', DefContrast);
     DayMode := Configuration.ReadInteger('Settings', 'DayMode', 0);
     ChangeModeDelay := Configuration.ReadInteger('Status', 'ChangeModeDelay', 0)+1;
+    LastRestartTime := Configuration.ReadDateTime('Status', 'LastRestart', now);
     NeedRestart := False;
     ChangedDayMode := false;
     if not (DayMode in [0..1]) then
@@ -120,6 +125,9 @@ begin
         else if Contrast < MinContrast then
             Contrast := MinContrast;
     end;
+    
+    if (std < MinStd) and (now - LastRestartTime >= MinRestartTime) then
+        NeedRestart := True;
             
     Configuration.WriteInteger('Settings', 'DayMode', DayMode);
     Configuration.WriteInteger('Settings', 'NightMode', 1-DayMode);
@@ -127,9 +135,15 @@ begin
     Configuration.WriteInteger('Settings', 'Contrast', Contrast);
     Configuration.WriteInteger('Status', 'ChangeModeDelay', min(65536, ChangeModeDelay));
     if NeedRestart then
-        Configuration.WriteInteger('Actions', 'NeedRestart', 1)
-    else
-        Configuration.WriteInteger('Actions', 'NeedRestart', 0);
+    begin
+        Configuration.WriteInteger('Actions', 'NeedRestart', 1);
+        LastRestartTime := now;
+    end else
+        Configuration.WriteInteger('Actions', 'NeedRestart', 0);            
+    
+    Configuration.WriteFloat('Statistics', 'Average', Aver);
+    Configuration.WriteFloat('Statistics', 'StdDev', std);
+    Configuration.WriteDateTime('Status', 'LastRestart', LastRestartTime);
             
     configuration.Free;
 end.    
