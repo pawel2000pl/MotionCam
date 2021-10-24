@@ -10,7 +10,7 @@ const
     ExpectedAverage = 0.5;
     ExpectedStd = 0.4; //of current average
     MinStd = 0.03;
-    MinRestartTime = OneHour/2;
+    MinRestartTime = OneHour/12;
     
     
     MaxBrightness = 80;
