@@ -1,5 +1,5 @@
 #!/bin/bash 
-sudo apt install ffmpeg motion v4l-utils fpc cpulimit
+sudo apt install ffmpeg motion v4l-utils fpc cpulimit ruby
 fpc -O3 "NightMode/NightMode.pas"
 fpc -O3 "NightMode/Lighter.pas"
 fpc -O3 "NightMode/CameraControl.pas"

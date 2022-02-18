@@ -18,7 +18,7 @@ then
 		then
 			echo "1" > "Temp/FrameCount"
 			echo "Finished a video: \"$FILE_NAME\""
-			nohup ./OneCoreMjpegToMp4.sh "$FILE_NAME" &> "Temp/CompressionLogs.txt" &
+			nohup ./RunTimeCompression.sh "$FILE_NAME" &> "Temp/CompressionLogs.txt" &
 			FILE_NAME="Video/$( date +%Y-%m-%d-%H-%M-%S ).mjpeg"
 		else
 			echo $FRAME_COUNT > "Temp/FrameCount"
