@@ -52,7 +52,7 @@ ln -f -s "$CAMERA_PATH" "Temp/video"
 ./InitGPIO.sh
     
 #Starting    
-motion -c "configuration.conf" &> "/dev/null" &
+./motion -c "configuration.conf" &> "/dev/null" &
 MOTION_PID=$!
 echo $MOTION_PID > "$TEMP_DIR/MOTION_PID"
 ruby -run -ehttpd "$MEM_PATH" -p8000 &> "/dev/null" & 
@@ -96,7 +96,7 @@ do
                 fi
                 sleep 1s
                 echo "Starting"
-                motion -c "configuration.conf" &> "/dev/null" &
+                ./motion -c "configuration.conf" &> "/dev/null" &
                 MOTION_PID=$!
                 echo $MOTION_PID > "$TEMP_DIR/MOTION_PID"
                 echo "ok"
@@ -112,7 +112,7 @@ do
         echo "Temporary disabled ( $( date ) )"
         ./sleep.sh $( cat $TEMP_DIR/TempraryDisable )
         rm "$TEMP_DIR/TempraryDisable"
-        motion -c "configuration.conf" &> "/dev/null" &
+        ./motion -c "configuration.conf" &> "/dev/null" &
         MOTION_PID=$!
         echo $MOTION_PID > "$TEMP_DIR/MOTION_PID"
         sleep 5s

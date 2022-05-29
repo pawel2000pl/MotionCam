@@ -19,16 +19,19 @@ then
 		echo "Compressing to mp4 - using libx264"
 		TEMP_FILENAME="$TEMP_FILENAME.mp4"
 		yes " " | cpulimit -l 240 -- nice -n 10 ffmpeg -framerate 4 -i "$1" -c:v libx264 -r 2 "$TEMP_FILENAME" || echo "Error during conversion the file \"$1\""
+		EXTENSION="mp4"
 	else
 		if [ $COUNT -gt 3 ];
 		then
 			echo "Compressing to mp4 - using libx265"
 			TEMP_FILENAME="$TEMP_FILENAME.mp4"
 			yes " " | cpulimit -l 240 -- nice -n 5 ffmpeg -framerate 4 -i "$1" -c:v libx265 -r 2 "$TEMP_FILENAME" || echo "Error during conversion the file \"$1\""
+			EXTENSION="mp4"
 		else
 			echo "Compressing to webm"
 			TEMP_FILENAME="$TEMP_FILENAME.webm"
 			yes " " | cpulimit -l 300 -- nice -n 1 ffmpeg -framerate 4 -i "$1" -r 4 "$TEMP_FILENAME"  || echo "Error during conversion the file \"$1\""	
+			EXTENSION="webm"
 		fi
 	fi
 	
@@ -42,7 +45,7 @@ then
 			then
 				echo "Error: compressed file is probably damaged"
 			else
-				cp "$TEMP_FILENAME" "$1.mp4" && rm -f "$1"
+				cp "$TEMP_FILENAME" "$1.$EXTENSION" && rm -f "$1"
 			fi
 		else
 			echo "The file \"$1\" after compression is larger - rejected"
